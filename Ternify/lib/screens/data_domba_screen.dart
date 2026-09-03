@@ -5,6 +5,7 @@ import '../models/perkawinan_model.dart';
 import '../repositories/domba_repository.dart';
 import '../services/api_service.dart';
 import '../widgets/app_popup.dart';
+import 'weight_monitoring_screen.dart';
 
 // ─── Screen utama ─────────────────────────────────────────────────────────────
 
@@ -902,6 +903,9 @@ class _DetailDombaModalState extends State<_DetailDombaModal> {
                 ],
               ),
             ),
+            const SizedBox(height: 14),
+            // ── Monitoring Berat Button ──
+            _buildWeightMonitoringButton(),
             const SizedBox(height: 20),
             // ── Rekam Medis Section ──
             _buildRekamMedisSection(),
@@ -1017,6 +1021,81 @@ class _DetailDombaModalState extends State<_DetailDombaModal> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // ── Weight Monitoring Button ──
+  Widget _buildWeightMonitoringButton() {
+    final domba = widget.domba;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: GestureDetector(
+        onTap: () => _openWeightMonitoring(domba),
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFF1A2B45), Color(0xFF2C4A7A)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: const [
+              BoxShadow(color: Color(0x25000000), blurRadius: 10, offset: Offset(0, 4)),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: Colors.white.withAlpha(25),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.monitor_weight_outlined, color: Colors.white, size: 22),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Monitoring Berat Badan',
+                      style: TextStyle(
+                        fontFamily: 'Georgia',
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      domba.berat != null
+                          ? 'Berat saat ini: ${domba.berat!.toStringAsFixed(1)} kg  ·  Lihat grafik pertumbuhan'
+                          : 'Lihat grafik & analitik pertumbuhan',
+                      style: TextStyle(fontSize: 11, color: Colors.white.withAlpha(170)),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.arrow_forward_ios_rounded, color: Colors.white.withAlpha(170), size: 14),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _openWeightMonitoring(Domba domba) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => WeightMonitoringScreen(
+          idDomba: domba.idDomba,
+          earTag: domba.earTag,
+        ),
       ),
     );
   }

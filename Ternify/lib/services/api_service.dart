@@ -18,7 +18,7 @@ class ApiService {
     // HP Fisik (debug) : http://192.168.1.15:8000/api  ← IP komputer kamu
     // Production       : https://striking-liberation-copy-production.up.railway.app/api
 
-    return "http://192.168.1.15:8000/api"; // HP Fisik
+    return "http://192.168.1.9:8000/api"; // HP Fisik
     // return "https://striking-liberation-copy-production.up.railway.app/api"; // Production
   }
 
@@ -819,6 +819,23 @@ static Future<List<Map<String, dynamic>>> fetchDombaByKandang(
 
   throw Exception(decoded['message'] ?? 'Gagal mengambil domba kandang');
 }
+
+  // ─────────────────────────────────────────────
+  // BERAT HISTORY (Monitoring Berat Badan)
+  // ─────────────────────────────────────────────
+
+  /// GET /api/domba/{id}/berat-history
+  static Future<Map<String, dynamic>> fetchBeratHistory(String idDomba) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/domba/$idDomba/berat-history'),
+      headers: await authHeaders(),
+    );
+    final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return Map<String, dynamic>.from(decoded['data'] ?? {});
+    }
+    throw Exception(decoded['message'] ?? 'Gagal mengambil riwayat berat');
+  }
 
   // ─────────────────────────────────────────────
   // REKAM MEDIS API

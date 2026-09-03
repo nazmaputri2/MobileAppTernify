@@ -37,6 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}',         [DombaController::class, 'update']);
         Route::delete('/{id}',      [DombaController::class, 'destroy']);
         Route::get('/{id}/rekam-medis', [RekamMedisController::class, 'byDomba']);
+        Route::get('/{id}/berat-history', [RekamMedisController::class, 'beratHistory']);
         Route::get('/{id}/perkawinan', [PerkawinanController::class, 'byDomba']);
     });
 

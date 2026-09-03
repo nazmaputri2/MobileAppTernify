@@ -126,6 +126,96 @@ class RekamMedisController extends Controller
     }
 
     /**
+     * GET /api/domba/{id}/berat-history
+     * Riwayat berat domba dari rekam medis, dikelompokkan per bulan.
+     * Juga menghitung perubahan berat, rata-rata pertumbuhan, dan growth alert.
+     */
+    public function beratHistory(Request $request, string $idDomba)
+    {
+        $userId = $request->user()->id;
+
+        // Verify domba belongs to user
+        $domba = Domba::where('user_id', $userId)->where('id_domba', $idDomba)->first();
+        if (!$domba) {
+            return response()->json(['success' => false, 'message' => 'Domba tidak ditemukan.'], 404);
+        }
+
+        // Fetch all rekam medis with berat, ordered oldest first
+        $records = RekamMedis::where('user_id', $userId)
+            ->where('id_domba', $idDomba)
+            ->whereNotNull('berat')
+            ->orderBy('tanggal_pemeriksaan', 'asc')
+            ->get(['tanggal_pemeriksaan', 'berat']);
+
+        // Group by year-month, take the last (most recent) record of each month
+        $monthlyMap = [];
+        foreach ($records as $r) {
+            $key = \Carbon\Carbon::parse($r->tanggal_pemeriksaan)->format('Y-m');
+            $monthlyMap[$key] = (float) $r->berat;
+        }
+
+        // Build monthly list for chart
+        $monthly = [];
+        foreach ($monthlyMap as $ym => $berat) {
+            $dt = \Carbon\Carbon::createFromFormat('Y-m', $ym);
+            $monthly[] = [
+                'year'  => (int) $dt->year,
+                'month' => (int) $dt->month,
+                'label' => $dt->translatedFormat('M Y'),
+                'berat' => $berat,
+            ];
+        }
+
+        // Analytics
+        $beratCount = count($monthly);
+        $perubahanBerat = null;
+        $rataRataPertumbuhan = null;
+        $growthAlert = false;
+        $lastIncreaseDays = null;
+
+        if ($beratCount >= 2) {
+            $first = $monthly[0]['berat'];
+            $last  = $monthly[$beratCount - 1]['berat'];
+            $perubahanBerat = round($last - $first, 2);
+            $rataRataPertumbuhan = round($perubahanBerat / ($beratCount - 1), 2);
+        }
+
+        // Growth Alert: check if no weight increase in last 30 days
+        // Compare the most recent record vs the one 30+ days ago
+        if ($records->count() >= 2) {
+            $latest = $records->last();
+            $latestDate = \Carbon\Carbon::parse($latest->tanggal_pemeriksaan);
+            $threshold  = $latestDate->copy()->subDays(30);
+
+            // Find the most recent record that is at least 30 days before the latest
+            $older = $records->filter(function ($r) use ($threshold) {
+                return \Carbon\Carbon::parse($r->tanggal_pemeriksaan)->lte($threshold);
+            })->last();
+
+            if ($older) {
+                $lastIncreaseDays = (int) \Carbon\Carbon::parse($older->tanggal_pemeriksaan)
+                    ->diffInDays($latestDate);
+                if ((float) $latest->berat <= (float) $older->berat) {
+                    $growthAlert = true;
+                }
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'ear_tag'             => $domba->ear_tag,
+                'berat_sekarang'      => $domba->berat,
+                'monthly'             => $monthly,
+                'perubahan_berat'     => $perubahanBerat,
+                'rata_rata_pertumbuhan' => $rataRataPertumbuhan,
+                'growth_alert'        => $growthAlert,
+                'last_increase_days'  => $lastIncreaseDays,
+            ],
+        ]);
+    }
+
+    /**
      * GET /api/rekam-medis/{id}
      * Detail satu rekam medis.
      */

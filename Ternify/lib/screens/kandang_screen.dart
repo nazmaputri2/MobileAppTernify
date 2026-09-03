@@ -5,6 +5,7 @@ import '../models/perkawinan_model.dart';
 import '../repositories/kandang_repository.dart';
 import '../services/api_service.dart';
 import '../widgets/app_popup.dart';
+import 'weight_monitoring_screen.dart';
 
 import '../models/domba_model.dart';
 import'../repositories/domba_repository.dart';
@@ -999,6 +1000,7 @@ class _DombaKandangSheetState extends State<_DombaKandangSheet> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: Colors.transparent,
       builder: (_) => _DetailDombaModal(
         domba: d,
@@ -1455,224 +1457,347 @@ class _DetailDombaModalState2 extends State<_DetailDombaModal> {
   @override
   Widget build(BuildContext context) {
     final domba = widget.domba;
-    return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFFFAF7F2),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
-        ),
-      ),
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-      ),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Handle
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(top: 12, bottom: 16),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(2),
+    final genderClr = widget.genderColor(domba.jenisKelamin);
+    final genderBg  = widget.genderBg(domba.jenisKelamin);
+    final screenH   = MediaQuery.of(context).size.height;
+
+    return DraggableScrollableSheet(
+      initialChildSize: 0.92,
+      minChildSize: 0.5,
+      maxChildSize: 0.95,
+      expand: false,
+      builder: (ctx, scrollCtrl) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFFFAF7F2),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
+            ),
+          ),
+          child: Column(
+            children: [
+              // ── Drag handle ──
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(top: 10, bottom: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
               ),
-            ),
 
-            // Header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: [
-                  const Text(
-                    'Detail Domba',
-                    style: TextStyle(
-                      fontFamily: 'Georgia',
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: navyDark,
-                    ),
-                  ),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEAE4D8),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(Icons.close, size: 16, color: navyDark),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 14),
-
-            // Identity card
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF5EFE4),
-                  borderRadius: BorderRadius.circular(12),
-                ),
+              // ── Fixed header ──
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 16, 12),
                 child: Row(
                   children: [
-                    Container(
-                      width: 52,
-                      height: 52,
-                      decoration: BoxDecoration(
-                        color: widget.genderBg(domba.jenisKelamin),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        domba.jenisKelamin == 'jantan'
-                            ? Icons.male
-                            : Icons.female,
-                        size: 28,
-                        color: widget.genderColor(domba.jenisKelamin),
+                    const Text(
+                      'Detail Domba',
+                      style: TextStyle(
+                        fontFamily: 'Georgia',
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: navyDark,
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            domba.earTag,
-                            style: const TextStyle(
-                              fontFamily: 'Georgia',
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: navyDark,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            '${domba.idBangsa ?? '-'} Â· ${domba.jenisKelaminLabel}',
-                            style: const TextStyle(
-                              fontSize: 12.5,
-                              color: textMuted,
-                            ),
-                          ),
-                        ],
+                    const Spacer(),
+                    // Gender badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: genderBg,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        domba.jenisKelaminLabel,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: genderClr,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEAE4D8),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(Icons.close, size: 16, color: navyDark),
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
 
-            // Info grid
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: [
-                  _infoBox('Umur', domba.umur),
-                  _infoBox('Berat', domba.berat != null ? '${domba.berat} kg' : '-'),
-                  _infoBox('Status', domba.status ?? '-'),
-                  _infoBox('Vaksinasi', domba.vaksinasi ?? '-'),
-                  _infoBox('Induk', domba.namaInduk),
-                  _infoBox('Pejantan', domba.namaPejantan),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
+              const Divider(height: 1, color: Color(0xFFEFEBE3)),
 
-            // Rekam Medis Section
-            _buildRekamMedisSection(),
-            const SizedBox(height: 20),
-
-            // Perkawinan Section
-            _buildPerkawinanSection(),
-            const SizedBox(height: 20),
-
-            // Action buttons
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: widget.onEdit,
-                      icon: const Icon(Icons.edit_outlined, size: 16),
-                      label: const Text('Edit'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: navyDark,
-                        side: const BorderSide(color: Color(0xFFBFB8A8)),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+              // ── Scrollable content ──
+              Expanded(
+                child: ListView(
+                  controller: scrollCtrl,
+                  padding: EdgeInsets.fromLTRB(
+                    16, 16, 16,
+                    MediaQuery.of(context).viewInsets.bottom + 16,
+                  ),
+                  children: [
+                    // Identity card
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF5EFE4),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 52,
+                            height: 52,
+                            decoration: BoxDecoration(
+                              color: genderBg,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              domba.jenisKelamin == 'jantan'
+                                  ? Icons.male
+                                  : Icons.female,
+                              size: 28,
+                              color: genderClr,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  domba.earTag,
+                                  style: const TextStyle(
+                                    fontFamily: 'Georgia',
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: navyDark,
+                                  ),
+                                ),
+                                const SizedBox(height: 3),
+                                Text(
+                                  '${domba.idBangsa ?? '-'} · ${domba.jenisKelaminLabel} · ${domba.umur}',
+                                  style: const TextStyle(
+                                    fontSize: 12.5,
+                                    color: textMuted,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: widget.onDelete,
-                      icon: const Icon(Icons.delete_outline, size: 16),
-                      label: const Text('Hapus'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: redAccent,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                    const SizedBox(height: 12),
+
+                    // Info grid — 3 rows × 2 columns, fully responsive
+                    Row(
+                      children: [
+                        Expanded(child: _infoBox('Umur', domba.umur)),
+                        const SizedBox(width: 10),
+                        Expanded(child: _infoBox('Berat',
+                            domba.berat != null ? '${domba.berat} kg' : '-')),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(child: _infoBox('Status', domba.status ?? '-')),
+                        const SizedBox(width: 10),
+                        Expanded(child: _infoBox('Vaksinasi', domba.vaksinasi ?? '-')),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(child: _infoBox('Induk', domba.namaInduk)),
+                        const SizedBox(width: 10),
+                        Expanded(child: _infoBox('Pejantan', domba.namaPejantan)),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Monitoring Berat Badan
+                    _buildWeightMonitoringButton(),
+                    const SizedBox(height: 20),
+
+                    // Rekam Medis
+                    _buildRekamMedisSection(),
+                    const SizedBox(height: 20),
+
+                    // Perkawinan
+                    _buildPerkawinanSection(),
+                    const SizedBox(height: 20),
+
+                    // Action buttons — di dalam list agar selalu tampil saat discroll
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: widget.onEdit,
+                            icon: const Icon(Icons.edit_outlined, size: 16),
+                            label: const Text(
+                              'Edit',
+                              style: TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: navyDark,
+                              side: const BorderSide(
+                                  color: Color(0xFFBFB8A8), width: 1.5),
+                              padding: const EdgeInsets.symmetric(vertical: 13),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
                         ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: widget.onDelete,
+                            icon: const Icon(Icons.delete_outline, size: 16),
+                            label: const Text(
+                              'Hapus',
+                              style: TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: redAccent,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              padding: const EdgeInsets.symmetric(vertical: 13),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: screenH * 0.02),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // ── Weight Monitoring Button ──
+  Widget _buildWeightMonitoringButton() {
+    final domba = widget.domba;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: GestureDetector(
+        onTap: () => _openWeightMonitoring(domba),
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFF1A2B45), Color(0xFF2C4A7A)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: const [
+              BoxShadow(color: Color(0x25000000), blurRadius: 10, offset: Offset(0, 4)),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: Colors.white.withAlpha(25),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.monitor_weight_outlined, color: Colors.white, size: 22),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Monitoring Berat Badan',
+                      style: TextStyle(
+                        fontFamily: 'Georgia',
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 2),
+                    Text(
+                      domba.berat != null
+                          ? 'Berat saat ini: ${domba.berat!.toStringAsFixed(1)} kg  ·  Lihat grafik pertumbuhan'
+                          : 'Lihat grafik & analitik pertumbuhan',
+                      style: TextStyle(fontSize: 11, color: Colors.white.withAlpha(170)),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+              Icon(Icons.arrow_forward_ios_rounded, color: Colors.white.withAlpha(170), size: 14),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _openWeightMonitoring(Domba domba) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => WeightMonitoringScreen(
+          idDomba: domba.idDomba,
+          earTag: domba.earTag,
         ),
       ),
     );
   }
 
   Widget _infoBox(String label, String value) {
-    return SizedBox(
-      width: 155,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: const Color(0xFFE8E3DA)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: const TextStyle(fontSize: 11, color: textMuted),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFE8E3DA)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(fontSize: 11, color: textMuted),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: navyDark,
             ),
-            const SizedBox(height: 4),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: navyDark,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -15,7 +15,7 @@ class ApiConfig {
     // HP Fisik (debug) : http://192.168.1.15:8001  ← IP komputer kamu
     // Production       : https://mobileappternify-production.up.railway.app
 
-    return "http://192.168.1.15:8001"; // HP Fisik
+    return "http://192.168.1.9:8001"; // HP Fisik
     // return "https://mobileappternify-production.up.railway.app"; // Production
   }
 
