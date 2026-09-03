@@ -1,0 +1,26 @@
+Alias name: upload
+Creation date: 22 Jul 2026
+Entry type: PrivateKeyEntry
+Certificate chain length: 1
+Certificate[1]:
+Owner: CN=Ternify, OU=Ternify, O=Ternify, L=Jakarta, ST=Jakarta, C=ID
+Issuer: CN=Ternify, OU=Ternify, O=Ternify, L=Jakarta, ST=Jakarta, C=ID
+Serial number: 45f7cecbde9e7a39
+Valid from: Wed Jul 22 11:06:02 GMT+07:00 2026 until: Sun Dec 07 11:06:02 GMT+07:00 2053
+Certificate fingerprints:
+	 SHA1: 0C:AB:F2:21:45:67:9A:B1:ED:D5:4C:A7:B4:C2:E9:35:C9:1F:ED:80
+	 SHA256: 4F:27:87:87:7A:5E:1F:11:D2:76:8C:8C:BC:4F:51:40:2F:96:72:CB:A7:00:B1:02:F1:2E:C0:BB:05:49:57:D5
+Signature algorithm name: SHA384withRSA
+Subject Public Key Algorithm: 2048-bit RSA key
+Version: 3
+
+Extensions: 
+
+#1: ObjectId: 2.5.29.14 Criticality=false
+SubjectKeyIdentifier [
+KeyIdentifier [
+0000: C7 ED 66 86 32 94 46 EB   99 63 0F AE 05 8C 19 B8  ..f.2.F..c......
+0010: FA BA D7 7F                                        ....
+]
+]
+

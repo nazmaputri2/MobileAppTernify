@@ -6,6 +6,7 @@ import numpy as np
 import pytesseract
 from rapidfuzz import process, fuzz
 
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 # Path Windows dihapus karena Colab menggunakan Linux. Pytesseract akan otomatis menemukannya.
 

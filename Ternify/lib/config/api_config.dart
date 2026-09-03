@@ -9,13 +9,14 @@ class ApiConfig {
   // Untuk production: http://your-server.com atau https://your-server.com
 
   static String get baseURL {
-    if (kIsWeb) {
-      return "http://localhost:8001";
-    }
-    if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
-      return "http://127.0.0.1:8001";
-    }
-    return "http://192.168.18.227:8001"; // Untuk Android Emulator. Ubah ke "http://192.168.0.178:8001" jika menggunakan HP Fisik.
+    // ⚠️  PENTING: Gunakan IP komputer di jaringan lokal, BUKAN localhost/127.0.0.1
+    // 127.0.0.1 = localhost HP itu sendiri, bukan komputer kamu!
+    //
+    // HP Fisik (debug) : http://192.168.1.15:8001  ← IP komputer kamu
+    // Production       : https://mobileappternify-production.up.railway.app
+
+    return "http://192.168.1.15:8001"; // HP Fisik
+    // return "https://mobileappternify-production.up.railway.app"; // Production
   }
 
   // Timeout configuration (dalam seconds)

@@ -11,19 +11,15 @@ class ApiService {
   // Device fisik      : http://192.168.x.x:8000/api
   // Production        : https://domain-kamu.com/api
  static String get baseUrl {
-    // if (kIsWeb) {
-    //   return "http://localhost:8080/api"; //
-    // }
+    // ⚠️  PENTING: Gunakan IP komputer di jaringan lokal, BUKAN localhost/127.0.0.1
+    // 127.0.0.1 = localhost HP itu sendiri, bukan komputer kamu!
+    //
+    // Emulator Android : http://10.0.2.2:8000/api
+    // HP Fisik (debug) : http://192.168.1.15:8000/api  ← IP komputer kamu
+    // Production       : https://striking-liberation-copy-production.up.railway.app/api
 
-    // // 2. GANTI pengecekan Platform menjadi seperti ini:
-    // if (defaultTargetPlatform == TargetPlatform.windows ||
-    //     defaultTargetPlatform == TargetPlatform.macOS ||
-    //     defaultTargetPlatform == TargetPlatform.linux) {
-    //   return "http://127.0.0.1:8080/api";
-    
-
-    return "http://127.0.0.1:8000/api";                           
-
+    return "http://192.168.1.15:8000/api"; // HP Fisik
+    // return "https://striking-liberation-copy-production.up.railway.app/api"; // Production
   }
 
   static const String _tokenKey = 'auth_token';
@@ -179,13 +175,17 @@ class ApiService {
     }
 
     return data;
-  } on GoogleSignInException catch (e) {
-    return {
-      'success': false,
-      'message': e.code == GoogleSignInExceptionCode.canceled
-          ? 'Login Google dibatalkan'
-          : 'Login Google gagal: ${e.description ?? e.code.name}',
-    };
+} on GoogleSignInException catch (e) {
+  print('GOOGLE SIGN IN ERROR');
+  print('Code: ${e.code}');
+  print('Description: ${e.description}');
+  print('Details: ${e.details}');
+
+  return {
+    'success': false,
+    'message': 'Login Google gagal: ${e.code} - ${e.description}',
+  };
+
   } catch (e) {
     return {
       'success': false,
