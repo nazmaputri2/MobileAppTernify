@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\KandangController;
 use App\Http\Controllers\Api\ScanLogController;
 use App\Http\Controllers\Api\RekamMedisController;
 use App\Http\Controllers\Api\PerkawinanController;
+use App\Http\Controllers\Api\NotifikasiController;
 use Illuminate\Support\Facades\Route;
 
 // ── Public routes (tidak perlu token) ──
@@ -23,6 +24,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile',    [AuthController::class, 'profile']);
     Route::put('/profile',    [AuthController::class, 'updateProfile']);
     Route::post('/logout',    [AuthController::class, 'logout']);
+
+    // Notifikasi cerdas peternakan
+    Route::get('/notifikasi', [NotifikasiController::class, 'index']);
 
     // Domba (data per user)
     Route::prefix('domba')->group(function () {

@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import '../services/api_service.dart';
 import '../repositories/domba_repository.dart';
 import '../repositories/kandang_repository.dart';
+import '../services/notification_service.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -47,10 +48,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int _statusBunting = 0;
   int _statusSakit = 0;
   List<Map<String, dynamic>> _dombaTerbaru = [];
+  int _unreadNotifCount = 0;
+  final NotificationService _notifService = NotificationService();
 
   @override
   void initState() {
     super.initState();
+    _notifService.requestPermission();
     _loadDashboardData();
   }
 
@@ -92,6 +96,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
         _userData = userData;
         _isLoading = false;
       });
+
+      // Ambil notifikasi setelah dashboard load untuk menghitung unread
+      final notifItems = await _notifService.fetchNotifikasi();
+      if (mounted) {
+        setState(() {
+          _unreadNotifCount = notifItems.where((n) => !n.dibaca).length;
+        });
+        // Tampilkan sistem pop-up untuk yang penting
+        await _notifService.pushPriorityNotifications(notifItems);
+      }
+
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -268,25 +283,47 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
 
               // Bell
-              Container(
-                width: 38,
-                height: 38,
-                margin: const EdgeInsets.only(right: 8),
-                decoration: BoxDecoration(
-                  color: _whiteOpacity10,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    const Icon(
-                      Icons.notifications_outlined,
-                      color: Colors.white70,
-                      size: 20,
-                    ),
-                    if (_statusSakit > 0)
-                      const Positioned(top: 7, right: 7, child: _NotifDot()),
-                  ],
+              GestureDetector(
+                onTap: () async {
+                  await Navigator.pushNamed(context, '/notifikasi');
+                  // Update counter setelah kembali dari halaman notifikasi
+                  final count = await _notifService.getUnreadCount();
+                  if (mounted && count != _unreadNotifCount) {
+                    setState(() => _unreadNotifCount = count);
+                  }
+                },
+                child: Container(
+                  width: 38,
+                  height: 38,
+                  margin: const EdgeInsets.only(right: 12),
+                  decoration: BoxDecoration(
+                    color: _whiteOpacity10,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: _whiteOpacity20, width: 1),
+                  ),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      const Icon(
+                        Icons.notifications_outlined,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      if (_unreadNotifCount > 0)
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: Container(
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFD92D20), // Merah mencolok
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               ),
 
@@ -976,20 +1013,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 }
 
 // Notif dot widget — const untuk menghindari rebuild
-class _NotifDot extends StatelessWidget {
-  const _NotifDot();
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 7,
-      height: 7,
-      decoration: const BoxDecoration(
-        color: Color(0xFFFF6B6B),
-        shape: BoxShape.circle,
-      ),
-    );
-  }
-}
+// Dihapus
 
 // ── Donut chart painter ──
 class _DonutPainter extends CustomPainter {

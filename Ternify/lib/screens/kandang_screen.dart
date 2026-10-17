@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../models/kandang_model.dart';
 import '../models/rekam_medis_model.dart';
 import '../models/perkawinan_model.dart';
@@ -1707,14 +1707,11 @@ class _DetailDombaModalState2 extends State<_DetailDombaModal> {
         child: Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF1A2B45), Color(0xFF2C4A7A)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0xFFE8E3DA)),
             boxShadow: const [
-              BoxShadow(color: Color(0x25000000), blurRadius: 10, offset: Offset(0, 4)),
+              BoxShadow(color: Color(0x0A000000), blurRadius: 8, offset: Offset(0, 2)),
             ],
           ),
           child: Row(
@@ -1723,10 +1720,10 @@ class _DetailDombaModalState2 extends State<_DetailDombaModal> {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: Colors.white.withAlpha(25),
+                  color: const Color(0xFFFAF7F2),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(Icons.monitor_weight_outlined, color: Colors.white, size: 22),
+                child: const Icon(Icons.monitor_weight_outlined, color: navyDark, size: 22),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -1739,7 +1736,7 @@ class _DetailDombaModalState2 extends State<_DetailDombaModal> {
                         fontFamily: 'Georgia',
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: navyDark,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -1747,12 +1744,12 @@ class _DetailDombaModalState2 extends State<_DetailDombaModal> {
                       domba.berat != null
                           ? 'Berat saat ini: ${domba.berat!.toStringAsFixed(1)} kg  ·  Lihat grafik pertumbuhan'
                           : 'Lihat grafik & analitik pertumbuhan',
-                      style: TextStyle(fontSize: 11, color: Colors.white.withAlpha(170)),
+                      style: const TextStyle(fontSize: 11, color: textMuted),
                     ),
                   ],
                 ),
               ),
-              Icon(Icons.arrow_forward_ios_rounded, color: Colors.white.withAlpha(170), size: 14),
+              const Icon(Icons.arrow_forward_ios_rounded, color: textMuted, size: 14),
             ],
           ),
         ),

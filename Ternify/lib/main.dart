@@ -5,12 +5,15 @@ import 'screens/login_screen.dart';
 import 'screens/data_domba_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/onboarding_screen.dart';
+import 'screens/notifikasi_screen.dart';
 import 'main_shell.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_sign_in/google_sign_in.dart';
+import 'services/notification_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService().initialize();
 
   await GoogleSignIn.instance.initialize(
     // Jika berjalan di Web, masukkan ID ke clientId. Jika di Android/iOS, biarkan null.
@@ -64,6 +67,7 @@ class TernakDigitalApp extends StatelessWidget {
         '/kandang': (context) => const MainShell(initialIndex: 3),
         '/profil': (context) => const MainShell(initialIndex: 4),
         '/data-domba': (context) => const DataDombaScreen(),
+        '/notifikasi': (context) => const NotifikasiScreen(),
       },
     );
   }
